@@ -1,7 +1,7 @@
 import shutil
 import os
 from copystatic import copy_content
-from gencontent import generate_page
+from gencontent import generate_pages_recursive
 
 def main():
     SRC_DIR = "./static"
@@ -13,7 +13,7 @@ def main():
     copy_content(SRC_DIR, DST_DIR)
 
     print("Generating page...")
-    generate_page("content/index.md","template.html","public/index.html")
+    generate_pages_recursive("content","template.html","public")
 
 
 
