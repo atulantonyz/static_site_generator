@@ -8,7 +8,7 @@ def extract_title(markdown):
         raise ValueError("invalid header")
     return markdown.split("\n")[0][2:]
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(base_path,from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path, 'r') as f:
         markdown = f.read()
@@ -18,13 +18,15 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
     template_html = template_html.replace("{{ Title }}",title)
     template_html = template_html.replace("{{ Content }}",htmlStr)
+    template_html = template_html.replace('href="/',f'href="{base_path}')
+    template_html = template_html.replace('src="/',f'src="{base_path}')
     dest_dir = os.path.dirname(dest_path)
     if not os.path.exists(dest_dir):
         os.mkdir(dest_dir)
     with open(dest_path, 'w') as f:
         f.write(template_html)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(base_path,dir_path_content, template_path, dest_dir_path):
     if not os.path.exists(dest_dir_path):
         os.mkdir(dest_dir_path)
     children = os.listdir(dir_path_content)
@@ -33,8 +35,8 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         dst_child_path =os.path.join(dest_dir_path, child_name)
         if os.path.isfile(child_path):
             dst_child_path = Path(dst_child_path).with_suffix(".html")
-            generate_page(child_path, template_path, dst_child_path) 
+            generate_page(base_path,child_path, template_path, dst_child_path) 
         else:
-            generate_pages_recursive(child_path, template_path, dst_child_path) 
+            generate_pages_recursive(base_path,child_path, template_path, dst_child_path) 
 
 
